@@ -1,0 +1,85 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+.table thead {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 6px 12px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+}
+
+.btn-danger {
+  background-color: #f44336;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+h1 {
+  color: #4CAF50;
+}
+
+.row.col-sm-10 {
+  margin: 0 auto;
+  max-width: 400px;
+}
+
+.col-sm-2,
+.col-sm-1 {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+
+a:hover {
+  text-decoration: underline;
+}
+
+  .contacts-pagination {
+    color: #4CAF50;
+    margin-top : 15px;
+    margin-bottom : 40px;
+    
+  }
+
+  .contacts-pagination a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #4CAF50;
+    
+  }
+
+  .contacts-pagination a:hover {
+    text-decoration: underline;
+  }
+  
+  .bouton-ajout {
+  	margin-left: 25%;
+    width: 50%;
+  }

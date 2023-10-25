@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="http://localhost:9000/css/table.css" rel="stylesheet" />
+    <link href="http://localhost:9000/css/style.css" rel="stylesheet" />
+    <title>Medilabo - Patients</title>
+</head>
+<body>
+<div class="container">
+  <h1>Mes contacts</h1>
+  <table border="1" class="table table-striped table-responsive-md">
+    <thead>
+    <tr>
+      <th>Prénom</th>
+      <th>Nom</th>
+      <th>Genre</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="patient : ${listPatients}">
+      <td th:text="${patient.prenom}"></td>
+      <td th:text="${patient.nom}"></td>
+      <td th:text="${patient.genre}"></td>
+      <td>
+        <a th:href="@{/patients/{patientId}/edit(patientId=${patient.idPatient})}" class="btn btn-primary">Actualiser</a>
+        <a th:href="@{/patients/{patientId}/delete(patientId=${patient.idPatient})}" class="btn btn-danger">Supprimer</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <a th:href="@{/patients/new}">
+    <button class="bouton-ajout">Ajouter un patient</button>
+  </a>
+</div>
+
+</body>
+</html>
