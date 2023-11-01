@@ -17,6 +17,8 @@
 .centered-image {
             display: block;
             margin: 0 auto;
+            max-width: 100%; /* La largeur maximale est de 100% de la largeur du contenant */
+            height: auto;
         }
 
 .solde-container {

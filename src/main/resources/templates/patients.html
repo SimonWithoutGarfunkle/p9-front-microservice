@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="http://localhost:9000/css/table.css" rel="stylesheet" />
-    <link href="http://localhost:9000/css/style.css" rel="stylesheet" />
+    <link th:href="@{/css/table.css}" rel="stylesheet" />
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
     <title>Medilabo - Patients</title>
 </head>
 <body>
@@ -27,8 +27,8 @@
       <td th:text="${patient.nom}"></td>
       <td th:text="${patient.genre}"></td>
       <td>
-        <a th:href="@{/patients/{patientId}/edit(patientId=${patient.idPatient})}" class="btn btn-primary">Actualiser</a>
-        <a th:href="@{/patients/{patientId}/delete(patientId=${patient.idPatient})}" class="btn btn-danger">Supprimer</a>
+        <a href=# class="btn btn-primary">Actualiser</a>
+        <a href=# class="btn btn-danger">Supprimer</a>
       </td>
     </tr>
     </tbody>
