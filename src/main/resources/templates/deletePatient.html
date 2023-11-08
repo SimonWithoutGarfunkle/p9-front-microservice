@@ -12,8 +12,7 @@
 <div class="commun-container">
   <div class="commun-form">
     <h2>Fiche Patient</h2>
-    <form  id="deletePatient" th:action="@{/patients/{id}(id=${patient.idPatient})}" th:object="${patient}" method="post">
-      <input type="hidden" name="_method" th:value="DELETE" />
+    <form  id="deletePatient" th:action="@{/patients/{id}/delete(id=${patient.idPatient})}" th:object="${patient}" method="post">
       <input type="hidden" id="idPatient" name="idPatient" th:value="${patient.idPatient}" />
       <div class="form-group">
         <label for="prenom">Prénom</label>

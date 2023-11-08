@@ -1,6 +1,6 @@
 package com.medilabo.front.controller;
 
-import com.medilabo.front.model.Patient;
+import com.medilabo.front.model.PatientDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -18,6 +18,9 @@ import java.util.List;
 
 import static com.medilabo.front.Constants.URL_GATEWAY;
 
+/**
+ * Send requests to Patients Back
+ */
 @Controller
 public class FrontPatientController {
 
@@ -26,8 +29,13 @@ public class FrontPatientController {
     private final RestTemplate restTemplate;
 
 
+    /**
+     * Add the basic auth header to the outgoing requests
+     *
+     * @param restTemplate
+     */
     public FrontPatientController(RestTemplate restTemplate) {
-        logger.info("FrontPatientController constructor");
+        logger.debug("Setting FrontPatientController constructor");
         ClientHttpRequestInterceptor interceptor = (httpRequest, bytes, execution) -> {
             UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String headerValue = getBasicAuthenticationHeader(user.getUsername(), "user");
@@ -36,59 +44,107 @@ public class FrontPatientController {
         };
 
         restTemplate.getInterceptors().add(interceptor);
-
+        logger.debug("Interceptor set for headers of outgoing requests");
         this.restTemplate = restTemplate;
     }
 
-    private static final String getBasicAuthenticationHeader(String username, String password) {
+    /**
+     * Encode the username and password for the basic auth
+     *
+     * @param username to encode
+     * @param password to encode
+     * @return String with encoded basic auth info
+     */
+    private static String getBasicAuthenticationHeader(String username, String password) {
+        logger.debug("Encoding username and password for basic Auth");
         String valueToEncode = username + ":" + password;
         return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
 
+    /**
+     * Request the list of all patients to the back patient
+     * @param model to collect list of all patients
+     * @return page patients with all patients
+     */
     @GetMapping("/patients")
     public String getPatients(Model model)  {
-        logger.info("get patients");
-        ResponseEntity<Patient[]> response = restTemplate.exchange(URL_GATEWAY+"/patients", HttpMethod.GET, null, Patient[].class);
-        List<Patient> patients = Arrays.asList(response.getBody());
+        logger.debug("get patients");
+        ResponseEntity<PatientDTO[]> response = restTemplate.exchange(URL_GATEWAY+"/patients", HttpMethod.GET, null, PatientDTO[].class);
+        List<PatientDTO> patients = Arrays.asList(response.getBody());
 
         model.addAttribute("listPatients", patients);
 
         return "patients";
     }
 
+    /**
+     * Display the form to create a new patient
+     * @param model new patient
+     * @return page addPatient
+     */
     @GetMapping("/patients/new")
     public String getAddPatient(Model model) {
-        model.addAttribute("patient", new Patient());
+        logger.debug("get form new patient");
+        model.addAttribute("patient", new PatientDTO());
 
         return "addPatient";
     }
 
+    /**
+     * Save the form as a new patient
+     *
+     * @param patient to add to database
+     * @return page patients with the new patient
+     */
     @PostMapping("/patients")
-    public String addPatient(Patient patient) {
-
-
-        logger.info("patient :"+patient.getNom()+" "+patient.getPrenom());
-        logger.info("patient id : "+patient.getIdPatient());
-        restTemplate.postForEntity(URL_GATEWAY+"/patients?", patient, Patient.class);
-
+    public String addPatient(PatientDTO patient) {
+        logger.info("saving new patient : "+patient.getNom()+" "+patient.getPrenom());
+        restTemplate.postForEntity(URL_GATEWAY+"/patients", patient, PatientDTO.class);
         return "redirect:/patients";
 
     }
 
-    @GetMapping("/patients/delete/{idPatient}")
-    public String getDeletePatient(@PathVariable Integer idPatient, Model model) {
-        ResponseEntity<Patient> response = restTemplate.exchange(URL_GATEWAY+"/patients/"+idPatient, HttpMethod.GET, null, Patient.class);
-        Patient patient = response.getBody();
+    @GetMapping("/patients/{id}")
+    public String getUpdatePatient(@PathVariable Integer id, Model model) {
+        ResponseEntity<PatientDTO> response = restTemplate.exchange(URL_GATEWAY+"/patients/"+id, HttpMethod.GET, null, PatientDTO.class);
+        PatientDTO patient = response.getBody();
+        model.addAttribute("patient", patient);
+        return "updatePatient";
+    }
+
+    @PostMapping("/patients/{id}/update")
+    public String updatePatient(@PathVariable Integer id, PatientDTO patient) {
+        logger.info("updating patient n°"+id);
+        restTemplate.postForEntity(URL_GATEWAY+"/patients/"+id+"/update", patient, PatientDTO.class);
+        return "redirect:/patients";
+    }
+
+    /**
+     *Display the form with the patient to delete
+     * @param id id of the patient to delete
+     * @param model patient to delete
+     * @return delete patient form
+     */
+    @GetMapping("/patients/{id}/delete")
+    public String getDeletePatient(@PathVariable Integer id, Model model) {
+        logger.debug("get delete patient form");
+        ResponseEntity<PatientDTO> response = restTemplate.exchange(URL_GATEWAY+"/patients/"+id, HttpMethod.GET, null, PatientDTO.class);
+        PatientDTO patient = response.getBody();
         model.addAttribute("patient", patient);
         return "deletePatient";
     }
 
 
-    @DeleteMapping("/patients/{id}")
+    /**
+     * Delete the patient corresponding to the id
+     * @param id of the patient to delete
+     * @return the page patients without the deleted patient
+     */
+    @PostMapping("/patients/{id}/delete")
     public String deletePatient(@PathVariable(value = "id") Integer id) {
-        restTemplate.delete(URL_GATEWAY+"/patients/"+ id);
-
+        logger.info("Deleting patient n°"+id);
+        restTemplate.exchange(URL_GATEWAY+"/patients/"+ id+"/delete", HttpMethod.POST, null, Void.class);
         return "redirect:/patients";
 
     }

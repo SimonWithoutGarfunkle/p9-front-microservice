@@ -1,6 +1,6 @@
 package com.medilabo.front.model;
 
-public class Patient {
+public class PatientDTO {
 
     private Integer idPatient;
 

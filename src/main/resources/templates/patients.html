@@ -28,8 +28,8 @@
       <td th:text="${patient.nom}"></td>
       <td th:text="${patient.genre}"></td>
       <td>
-        <a th:href="@{/patients/update/{id}(id=${patient.idPatient})}" class="btn btn-primary">Actualiser</a>
-        <a th:href="@{/patients/delete/{id}(id=${patient.idPatient})}" class="btn btn-danger">Supprimer</a>
+        <a th:href="@{/patients/{id}(id=${patient.idPatient})}" class="btn btn-primary">Actualiser</a>
+        <a th:href="@{/patients/{id}/delete(id=${patient.idPatient})}" class="btn btn-danger">Supprimer</a>
       </td>
     </tr>
     </tbody>
