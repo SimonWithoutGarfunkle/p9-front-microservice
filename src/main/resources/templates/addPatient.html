@@ -5,14 +5,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link th:href="@{/css/style.css}" rel="stylesheet" />
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
     <title>Medilabo - Patient</title>
 </head>
 <body>
 <div class="commun-container">
   <div class="commun-form">
     <h2>Fiche Patient</h2>
-    <form  action="/patients" method="post">
+    <form  action="/patients" th:object="${patient}" method="post">
+      <input type="hidden" id="idPatient" name="idPatient" th:value="${patient.idPatient}" />
       <div class="form-group">
         <label for="prenom">Prénom*</label>
         <input type="text" id="prenom" name="prenom" placeholder="Saisissez le prénom" required>
@@ -22,7 +23,7 @@
         <input type="text" id="nom" name="nom" placeholder="Saisissez le nom" required>
       </div>
       <div class="form-group">
-        <label for="nom">Genre*</label>
+        <label for="genre">Genre*</label>
         <select id="genre" name="genre" required>
           <option value="HOMME">Homme</option>
           <option value="FEMME">Femme</option>

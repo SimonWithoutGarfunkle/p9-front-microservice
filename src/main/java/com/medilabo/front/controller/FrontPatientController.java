@@ -1,8 +1,6 @@
 package com.medilabo.front.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.medilabo.front.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -14,9 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 import static com.medilabo.front.Constants.URL_GATEWAY;
 
@@ -27,13 +25,12 @@ public class FrontPatientController {
 
     private final RestTemplate restTemplate;
 
+
     public FrontPatientController(RestTemplate restTemplate) {
         logger.info("FrontPatientController constructor");
         ClientHttpRequestInterceptor interceptor = (httpRequest, bytes, execution) -> {
             UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String headerValue = getBasicAuthenticationHeader(user.getUsername(), "user");
-            logger.info("username : "+user.getUsername());
-            logger.info("user password : "+user.getPassword());
             httpRequest.getHeaders().set("Authorization", headerValue);
             return execution.execute(httpRequest, bytes);
         };
@@ -48,23 +45,12 @@ public class FrontPatientController {
         return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
-    private String generateHeader() {
-        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String header = getBasicAuthenticationHeader(user.getUsername(), user.getPassword());
-        logger.info("username : "+user.getUsername());
-        logger.info("user password : "+user.getPassword());
-        return header;
-    }
-
 
     @GetMapping("/patients")
-    public String getPatients(Model model) throws JsonProcessingException {
+    public String getPatients(Model model)  {
         logger.info("get patients");
-        ResponseEntity<String> response = restTemplate.exchange(URL_GATEWAY+"/patients", HttpMethod.GET, null, String.class);
-        String patientsJson = response.getBody();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<Map<String, Object>> patients = objectMapper.readValue(patientsJson, new TypeReference<List<Map<String, Object>>>() {});
+        ResponseEntity<Patient[]> response = restTemplate.exchange(URL_GATEWAY+"/patients", HttpMethod.GET, null, Patient[].class);
+        List<Patient> patients = Arrays.asList(response.getBody());
 
         model.addAttribute("listPatients", patients);
 
@@ -72,26 +58,31 @@ public class FrontPatientController {
     }
 
     @GetMapping("/patients/new")
-    public String getAddPatient() {
+    public String getAddPatient(Model model) {
+        model.addAttribute("patient", new Patient());
+
         return "addPatient";
     }
 
     @PostMapping("/patients")
-    public String addPatient(@RequestParam String prenom, @RequestParam String nom, @RequestParam String genre, @RequestParam String adresse, @RequestParam String telephone) {
-        String query ="prenom="+prenom+"&nom="+nom+"&genre="+genre;
-        if (!adresse.isEmpty()) {
-            query+="&adresse="+adresse;
-        }
-        if (!telephone.isEmpty()) {
-            query+="&telephone="+telephone;
-        }
-        restTemplate.exchange(URL_GATEWAY+"/patients?"+query, HttpMethod.POST, null, String.class);
+    public String addPatient(Patient patient) {
 
 
-        return "patients";
+        logger.info("patient :"+patient.getNom()+" "+patient.getPrenom());
+        logger.info("patient id : "+patient.getIdPatient());
+        restTemplate.postForEntity(URL_GATEWAY+"/patients?", patient, Patient.class);
+
+        return "redirect:/patients";
 
     }
 
+    @GetMapping("/patients/delete/{idPatient}")
+    public String getDeletePatient(@PathVariable Integer idPatient, Model model) {
+        ResponseEntity<Patient> response = restTemplate.exchange(URL_GATEWAY+"/patients/"+idPatient, HttpMethod.GET, null, Patient.class);
+        Patient patient = response.getBody();
+        model.addAttribute("patient", patient);
+        return "deletePatient";
+    }
 
 
     @DeleteMapping("/patients/{id}")

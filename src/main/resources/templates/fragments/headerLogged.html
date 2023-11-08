@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+
+<body>
+<div th:fragment="header">
+    <header>
+        <nav class="menu">
+            <ul>
+                <li th:if="${#authorization.expression('isAnonymous()')}"><a
+                        th:href="@{/login}">Connexion</a></li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/home}">Accueil</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/patients}">Patients</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit">Deconnexion</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+</div>
+</body>
+</html>
