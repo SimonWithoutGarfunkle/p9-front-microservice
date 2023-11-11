@@ -35,6 +35,7 @@ public class FrontPatientController {
      */
     public FrontPatientController(RestTemplate restTemplate) {
         logger.debug("Setting FrontPatientController constructor");
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString(("user:user").getBytes()) );
         logger.info(headers.toString());
