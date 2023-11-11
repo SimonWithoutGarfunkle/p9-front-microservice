@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,34 +29,26 @@ public class FrontPatientController {
 
     /**
      * Add the basic auth header to the outgoing requests
+     * Request the gateway to get the base64 authentication header of the connected user
      *
-     * @param restTemplate
+     * @param restTemplate request to the back
      */
     public FrontPatientController(RestTemplate restTemplate) {
         logger.debug("Setting FrontPatientController constructor");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString(("user:user").getBytes()) );
+        logger.info(headers.toString());
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+        ResponseEntity<String> finalHeader = restTemplate.exchange(URL_GATEWAY+"/auth/header", HttpMethod.GET, entity, String.class);
         ClientHttpRequestInterceptor interceptor = (httpRequest, bytes, execution) -> {
-            UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String headerValue = getBasicAuthenticationHeader(user.getUsername(), "user");
-            httpRequest.getHeaders().set("Authorization", headerValue);
+            httpRequest.getHeaders().set("Authorization", finalHeader.getBody());
             return execution.execute(httpRequest, bytes);
         };
 
         restTemplate.getInterceptors().add(interceptor);
         logger.debug("Interceptor set for headers of outgoing requests");
         this.restTemplate = restTemplate;
-    }
-
-    /**
-     * Encode the username and password for the basic auth
-     *
-     * @param username to encode
-     * @param password to encode
-     * @return String with encoded basic auth info
-     */
-    private static String getBasicAuthenticationHeader(String username, String password) {
-        logger.debug("Encoding username and password for basic Auth");
-        String valueToEncode = username + ":" + password;
-        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
 
@@ -72,9 +62,7 @@ public class FrontPatientController {
         logger.debug("get patients");
         ResponseEntity<PatientDTO[]> response = restTemplate.exchange(URL_GATEWAY+"/patients", HttpMethod.GET, null, PatientDTO[].class);
         List<PatientDTO> patients = Arrays.asList(response.getBody());
-
         model.addAttribute("listPatients", patients);
-
         return "patients";
     }
 
@@ -102,9 +90,15 @@ public class FrontPatientController {
         logger.info("saving new patient : "+patient.getNom()+" "+patient.getPrenom());
         restTemplate.postForEntity(URL_GATEWAY+"/patients", patient, PatientDTO.class);
         return "redirect:/patients";
-
     }
 
+    /**
+     * Display the update patient form
+     *
+     * @param id of the patient to update
+     * @param model to update
+     * @return the update patient form
+     */
     @GetMapping("/patients/{id}")
     public String getUpdatePatient(@PathVariable Integer id, Model model) {
         ResponseEntity<PatientDTO> response = restTemplate.exchange(URL_GATEWAY+"/patients/"+id, HttpMethod.GET, null, PatientDTO.class);
@@ -113,6 +107,12 @@ public class FrontPatientController {
         return "updatePatient";
     }
 
+    /**
+     *send the update request to the gateway
+     *
+     * @param patient to update
+     * @return list of patients
+     */
     @PostMapping("/patients/{id}/update")
     public String updatePatient(@PathVariable Integer id, PatientDTO patient) {
         logger.info("updating patient n°"+id);
@@ -121,7 +121,7 @@ public class FrontPatientController {
     }
 
     /**
-     *Display the form with the patient to delete
+     * Display the form with the patient to delete
      * @param id id of the patient to delete
      * @param model patient to delete
      * @return delete patient form

@@ -15,4 +15,5 @@ public class LoginController {
     public String getHome() {
         return "home";
     }
+
 }
