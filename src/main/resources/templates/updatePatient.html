@@ -34,15 +34,15 @@
       </div>
       <div class="form-group">
         <label for="rue">Rue</label>
-        <input type="text" id="rue" name="rue" placeholder="Saisissez l'adresse" >
+        <input type="text" id="rue" name="rue" th:field="*{rue}" placeholder="Saisissez l'adresse" >
       </div>
       <div class="form-group">
         <label for="codePostal">Code Postal</label>
-        <input type="text" id="codePostal" name="codePostal" placeholder="Saisissez le code postal" >
+        <input type="text" id="codePostal" name="codePostal" th:field="*{codePostal}" placeholder="Saisissez le code postal" >
       </div>
       <div>
         <label for="ville">Ville</label>
-        <input type="text" id="ville" name="ville" placeholder="Saisissez la ville" >
+        <input type="text" id="ville" name="ville" th:field="*{ville}" placeholder="Saisissez la ville" >
       </div>
       <div class="form-group">
         <label for="telephone">Téléphone</label>
