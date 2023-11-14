@@ -32,6 +32,12 @@ public class FrontDoctorController {
     }
 
 
+    /**
+     * Display the form to add a new note to the patient
+     * @param id of the patient
+     * @param model new note
+     * @return page addNote
+     */
     @GetMapping("/addNote/{id}")
     public String getAddNote(@PathVariable Integer id, Model model) {
         model.addAttribute("note", new NoteDTO());
@@ -39,27 +45,21 @@ public class FrontDoctorController {
         return "addNote";
     }
 
+    /**
+     * Send the form as a new note on the patient
+     *
+     * @param id of the patient
+     * @param note to save
+     * @return page patient with the new note
+     */
     @PostMapping("/{id}")
     public String addNoteToFiche(@PathVariable Integer id, NoteDTO note) {
 
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            logger.info("jusque la ca va");
-            Date parsedDate = sdf.parse(note.getDateAsString());
-            note.setDate(parsedDate);
-        } catch (ParseException e) {
-            logger.info("Date conversion failed !");
-        } catch (java.text.ParseException e) {
-            throw new RuntimeException(e);
-        }
-        logger.info("ici on est ok");
+        logger.info("sending note from "+note.getDocteur()+" to back doctor");
         restTemplate.postForEntity(URL_GATEWAY+"/doctor/"+id, note, NoteDTO.class);
         logger.info("post note done");
 
         return "redirect:/patients/"+id;
     }
-
-
-
 
 }
