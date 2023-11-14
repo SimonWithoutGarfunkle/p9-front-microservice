@@ -52,5 +52,12 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var inputDate = document.getElementById('date');
+        var today = new Date().toISOString().split('T')[0];
+        inputDate.value = today;
+    });
+</script>
 </body>
 </html>

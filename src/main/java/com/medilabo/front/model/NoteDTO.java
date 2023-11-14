@@ -1,5 +1,9 @@
 package com.medilabo.front.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class NoteDTO {
@@ -10,6 +14,7 @@ public class NoteDTO {
 
     private String texte;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
     public String getId() {
@@ -42,5 +47,10 @@ public class NoteDTO {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getDateAsString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(this.date);
     }
 }
