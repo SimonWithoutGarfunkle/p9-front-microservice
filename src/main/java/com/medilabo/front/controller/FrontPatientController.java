@@ -1,17 +1,20 @@
 package com.medilabo.front.controller;
 
+import com.medilabo.front.model.FichePatientDTO;
+import com.medilabo.front.model.NoteDTO;
 import com.medilabo.front.model.PatientDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.medilabo.front.Constants.URL_GATEWAY;
@@ -26,28 +29,8 @@ public class FrontPatientController {
 
     private final RestTemplate restTemplate;
 
-
-    /**
-     * Add the basic auth header to the outgoing requests
-     * Request the gateway to get the base64 authentication header of the connected user
-     *
-     * @param restTemplate request to the back
-     */
+    @Autowired
     public FrontPatientController(RestTemplate restTemplate) {
-        logger.debug("Setting FrontPatientController constructor");
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString(("user:user").getBytes()) );
-        logger.info(headers.toString());
-        HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        ResponseEntity<String> finalHeader = restTemplate.exchange(URL_GATEWAY+"/auth/header", HttpMethod.GET, entity, String.class);
-        ClientHttpRequestInterceptor interceptor = (httpRequest, bytes, execution) -> {
-            httpRequest.getHeaders().set("Authorization", finalHeader.getBody());
-            return execution.execute(httpRequest, bytes);
-        };
-
-        restTemplate.getInterceptors().add(interceptor);
-        logger.debug("Interceptor set for headers of outgoing requests");
         this.restTemplate = restTemplate;
     }
 
@@ -94,6 +77,7 @@ public class FrontPatientController {
 
     /**
      * Display the update patient form
+     * This page is divided into 2 parts : the patient from and his history
      *
      * @param id of the patient to update
      * @param model to update
@@ -101,9 +85,27 @@ public class FrontPatientController {
      */
     @GetMapping("/patients/{id}")
     public String getUpdatePatient(@PathVariable Integer id, Model model) {
+        // Get the info from the patient
         ResponseEntity<PatientDTO> response = restTemplate.exchange(URL_GATEWAY+"/patients/"+id, HttpMethod.GET, null, PatientDTO.class);
         PatientDTO patient = response.getBody();
         model.addAttribute("patient", patient);
+
+        // Get the history from the patient
+        ResponseEntity<FichePatientDTO> fiche = restTemplate.exchange(URL_GATEWAY+"/doctor/"+id, HttpMethod.GET, null, FichePatientDTO.class);
+        // If the patient is new and doest have a fiche, create it and save it in database
+        if (fiche.getBody() == null) {
+            FichePatientDTO newFiche = new FichePatientDTO();
+            newFiche.setPatientId(id);
+            newFiche.setNotes(new ArrayList<>());
+            restTemplate.postForEntity(URL_GATEWAY+"/doctor/createFiche/"+id, newFiche, FichePatientDTO.class);
+            fiche = restTemplate.exchange(URL_GATEWAY+"/doctor/"+id, HttpMethod.GET, null, FichePatientDTO.class);
+
+        }
+        FichePatientDTO fichePatientDTO = fiche.getBody();
+        List<NoteDTO> notes = fichePatientDTO.getNotes();
+        notes.sort(Comparator.comparing(NoteDTO::getDate).reversed());
+        model.addAttribute("notes", notes);
+
         return "updatePatient";
     }
 

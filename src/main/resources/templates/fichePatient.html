@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{/css/fichePatient.css}" rel="stylesheet" />
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
+    <title>Medilabo - Patient</title>
+</head>
+<body>
+<div th:insert="~{fragments/headerLogged :: header}"></div>
+<div class="commun-container">
+    <div class="commun-form">
+        <h2>Historique Patient</h2>
+        <form  action="" th:object="${fichePatientDTO}" method="post">
+            <div class="form-group">
+                <label for="patientId">Patient ID</label>
+                <span th:text="${fichePatientDTO.patientId}"></span>
+            </div>
+
+            <div th:each="note : ${fichePatientDTO.notes}" class="note-container">
+                <div class="note-header">
+                    <div>
+                        <strong th:text="${note.docteur}"></strong>
+                    </div>
+                    <div th:text="${#dates.format(note.date, 'EEEE d MMMM yyyy')}"></div>
+                </div>
+                <div class="note-text" th:text="${note.texte}"></div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    // Script JavaScript pour gérer l'expansion de la zone de texte des notes
+    document.querySelectorAll('.note-text').forEach(function(noteText) {
+        noteText.addEventListener('click', function() {
+            this.classList.toggle('expand');
+        });
+    });
+</script>
+</body>
+</html>
