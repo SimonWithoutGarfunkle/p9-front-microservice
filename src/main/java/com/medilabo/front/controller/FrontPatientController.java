@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -91,6 +92,15 @@ public class FrontPatientController {
 
         // Get the history from the patient
         ResponseEntity<FichePatientDTO> fiche = restTemplate.exchange(URL_GATEWAY+"/doctor/"+id, HttpMethod.GET, null, FichePatientDTO.class);
+        // If the patient is new and doest have a fiche, create it and save it in database
+        if (fiche.getBody() == null) {
+            FichePatientDTO newFiche = new FichePatientDTO();
+            newFiche.setPatientId(id);
+            newFiche.setNotes(new ArrayList<>());
+            restTemplate.postForEntity(URL_GATEWAY+"/doctor/createFiche/"+id, newFiche, FichePatientDTO.class);
+            fiche = restTemplate.exchange(URL_GATEWAY+"/doctor/"+id, HttpMethod.GET, null, FichePatientDTO.class);
+
+        }
         FichePatientDTO fichePatientDTO = fiche.getBody();
         List<NoteDTO> notes = fichePatientDTO.getNotes();
         notes.sort(Comparator.comparing(NoteDTO::getDate).reversed());

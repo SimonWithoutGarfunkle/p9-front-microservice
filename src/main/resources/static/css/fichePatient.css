@@ -11,16 +11,6 @@
     margin-bottom: 10px;
 }
 
-.note-text {
-    overflow: hidden;
-    max-height: 60px;
-    transition: max-height 2s ease-out;
-}
-
-.note-text.expand {
-    max-height: none;
-}
-
 .note {
     border: 1px solid #ccc;
     padding: 10px;
@@ -32,4 +22,12 @@
     max-height: 60px;
     transition: max-height 2s ease-out;
     position: relative;
+}
+
+.note-text.expand {
+    max-height: none;
+}
+
+textarea {
+    border-radius: 5px;
 }

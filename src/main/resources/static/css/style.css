@@ -53,6 +53,12 @@ input[type="email"] {
   border-radius: 5px;
 }
 
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="email"] {
+  width: 80%;
+}
+
 .custom-select {
   width: 65%; /* ou une autre valeur en pourcentage ou en pixels */
   padding: 10px;

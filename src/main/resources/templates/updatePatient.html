@@ -35,6 +35,10 @@
         </select>
       </div>
       <div class="form-group">
+        <label for="dateNaissance">Date de naissance*</label>
+        <input type="date" id="dateNaissance" name="dateNaissance" th:field="*{dateNaissance}" placeholder="JJ/MM/AAAA" required>
+      </div>
+      <div class="form-group">
         <label for="rue">Rue</label>
         <input type="text" id="rue" name="rue" th:field="*{rue}" placeholder="Saisissez l'adresse" >
       </div>
@@ -63,9 +67,9 @@
           <div>
             <strong th:text="${note.docteur}"></strong>
           </div>
-          <div th:text="${#dates.format(note.date, 'EEEE d MMMM yyyy')}" required></div>
+          <div th:text="${#dates.format(note.date, 'EEEE d MMMM yyyy')}" ></div>
         </div>
-        <div class="note-text" th:text="${note.texte}"></div>
+        <textarea class="note-text" th:text="${note.texte}" rows="3" cols="35" readonly></textarea>
       </div>
       <div class="form-group">
         <button type="submit">Ajouter une note</button>

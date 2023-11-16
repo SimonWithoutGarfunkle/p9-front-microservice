@@ -49,8 +49,4 @@ public class NoteDTO {
         this.date = date;
     }
 
-    public String getDateAsString() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(this.date);
-    }
 }
