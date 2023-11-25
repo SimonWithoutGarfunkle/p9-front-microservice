@@ -77,7 +77,7 @@ public class FrontPatientController {
 
     /**
      * Display the update patient form
-     * This page is divided into 2 parts : the patient from and his history
+     * This page is divided into 2 parts : the patient form and his history
      *
      * @param id of the patient to update
      * @param model to update
@@ -85,12 +85,12 @@ public class FrontPatientController {
      */
     @GetMapping("/patients/{id}")
     public String getUpdatePatient(@PathVariable Integer id, Model model) {
-        // Get the info from the patient
+        // Get the info for the patient
         ResponseEntity<PatientDTO> response = restTemplate.exchange(URL_GATEWAY+"/patients/"+id, HttpMethod.GET, null, PatientDTO.class);
         PatientDTO patient = response.getBody();
         model.addAttribute("patient", patient);
 
-        // Get the history from the patient
+        // Get the history for the patient
         ResponseEntity<FichePatientDTO> fiche = restTemplate.exchange(URL_GATEWAY+"/doctor/"+id, HttpMethod.GET, null, FichePatientDTO.class);
         // If the patient is new and doest have a fiche, create it and save it in database
         if (fiche.getBody() == null) {
@@ -105,6 +105,11 @@ public class FrontPatientController {
         List<NoteDTO> notes = fichePatientDTO.getNotes();
         notes.sort(Comparator.comparing(NoteDTO::getDate).reversed());
         model.addAttribute("notes", notes);
+
+        // Get the diabetes assessment for the patient
+        ResponseEntity<String> assessment = restTemplate.exchange(URL_GATEWAY+"/assessment/"+id, HttpMethod.GET, null, String.class);
+        String assessmentBody = assessment.getBody();
+        model.addAttribute("assessment", assessmentBody);
 
         return "updatePatient";
     }

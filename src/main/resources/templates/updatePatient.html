@@ -12,6 +12,7 @@
 <body>
 <div th:insert="~{fragments/headerLogged :: header}"></div>
 <div class="commun-container">
+  <!-- bloc gauche fiche patient -->
   <div class="commun-form">
     <h2>Fiche Patient</h2>
     <h3>Mise à jour</h3>
@@ -25,7 +26,6 @@
         <label for="nom">Nom*</label>
         <input type="text" id="nom" name="nom" placeholder="Saisissez le nom" th:field="*{nom}" required>
       </div>
-
       <div class="form-group">
         <label for="nom">Genre*</label>
         <select class="custom-select" id="genre" name="genre" th:field="*{genre}" required>
@@ -36,7 +36,7 @@
       </div>
       <div class="form-group">
         <label for="dateNaissance">Date de naissance*</label>
-        <input type="date" id="dateNaissance" name="dateNaissance" th:field="*{dateNaissance}" placeholder="JJ/MM/AAAA" required>
+        <input type="date" id="dateNaissance" name="dateNaissance" th:field="*{dateNaissance}" placeholder="JJ/MM/AAAA" min="1990-01-01" required>
       </div>
       <div class="form-group">
         <label for="rue">Rue</label>
@@ -44,7 +44,7 @@
       </div>
       <div class="form-group">
         <label for="codePostal">Code Postal</label>
-        <input type="text" id="codePostal" name="codePostal" th:field="*{codePostal}" placeholder="Saisissez le code postal" >
+        <input type="text" id="codePostal" name="codePostal" th:field="*{codePostal}" placeholder="Saisissez le code postal" pattern="[0-9]{5}" title="Veuillez saisir un code postal valide (5 chiffres)" >
       </div>
       <div class="form-group">
         <label for="ville">Ville</label>
@@ -52,13 +52,24 @@
       </div>
       <div class="form-group">
         <label for="telephone">Téléphone</label>
-        <input type="text" id="telephone" name="telephone" placeholder="Saisissez le numéro" th:field="*{telephone}">
+        <input type="text" id="telephone" name="telephone" placeholder="Saisissez le numéro" th:field="*{telephone}" pattern="[0-9]{7,11}" title="Veuillez saisir un numéro de téléphone valide (uniquement des chiffres)" >
       </div>
       <div class="form-group">
         <button type="submit">Enregistrer</button>
       </div>
     </form>
   </div>
+  <!-- bloc droite evaluation patient -->
+  <div class="vertical-align">
+  <div class="commun-form">
+    <div class="evaluation">
+      <div class="note-container" th:class="'evaluation-' + ${assessment.toLowerCase()}">
+        <h2>Risque diabète : </h2>
+        <p th:text="${assessment}"></p>
+      </div>
+    </div>
+  </div>
+  <!-- bloc droite historique patient -->
   <div class="commun-form">
     <h2>Historique Patient</h2>
     <form  th:action="@{/doctor/addNote/{id}(id=${patient.idPatient})}" th:object="${note}" method="get">
@@ -76,7 +87,9 @@
       </div>
     </form>
   </div>
+  </div>
 </div>
+<!--
 <script>
   // Script JavaScript pour gérer l'expansion de la zone de texte des notes
   document.querySelectorAll('.note-text').forEach(function(noteText) {
@@ -84,6 +97,11 @@
       this.classList.toggle('expand');
     });
   });
+</script>
+-->
+<script>
+  let today = new Date().toISOString().split('T')[0];
+  document.getElementById('dateNaissance').setAttribute('max', today);
 </script>
 </body>
 </html>

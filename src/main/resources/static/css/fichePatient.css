@@ -31,3 +31,43 @@
 textarea {
     border-radius: 5px;
 }
+
+.vertical-align {
+    display: flex;
+    flex-direction: column;
+}
+
+.evaluation-early {
+    background-color: #ef6878;
+    margin: 10px;
+    border-radius:5px;
+    align-items: center;
+}
+
+.evaluation-borderline {
+    background-color: #faf4a1;
+    margin: 10px;
+    border-radius:5px;
+    align-items: center;
+}
+
+.evaluation-in {
+    background-color: #f6b372;
+    margin: 10px;
+    border-radius:5px;
+    align-items: center;
+}
+
+.evaluation-none {
+    background-color: #b3f1b0;
+    margin: 10px;
+    border-radius:5px;
+    align-items: center;
+}
+
+
+.evaluation {
+    text-align: center;
+}
+
+
