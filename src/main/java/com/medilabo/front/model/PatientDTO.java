@@ -26,7 +26,6 @@ public class PatientDTO {
 
     private String telephone;
 
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateNaissance;
 

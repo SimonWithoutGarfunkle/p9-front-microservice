@@ -1,9 +1,7 @@
 package com.medilabo.front.model;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class MyUser {
