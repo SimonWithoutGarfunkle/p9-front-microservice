@@ -18,7 +18,7 @@
                 </li>
                 <li th:if="${#authorization.expression('isAuthenticated()')}">
                     <form th:action="@{/logout}" method="post">
-                        <button type="submit">Deconnexion</button>
+                        <button type="submit">Déconnexion</button>
                     </form>
                 </li>
             </ul>

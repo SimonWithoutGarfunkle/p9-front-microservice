@@ -89,16 +89,14 @@
   </div>
   </div>
 </div>
-<!--
 <script>
   // Script JavaScript pour gérer l'expansion de la zone de texte des notes
   document.querySelectorAll('.note-text').forEach(function(noteText) {
-    noteText.addEventListener('click', function() {
+    noteText.addEventListener('focus', function() {
       this.classList.toggle('expand');
     });
   });
 </script>
--->
 <script>
   let today = new Date().toISOString().split('T')[0];
   document.getElementById('dateNaissance').setAttribute('max', today);
