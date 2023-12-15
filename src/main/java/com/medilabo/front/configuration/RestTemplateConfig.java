@@ -32,15 +32,9 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString(("user:user").getBytes()) );
-        logger.debug("checking temporary header :"+ headers);
-        HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        ResponseEntity<String> finalHeader = restTemplate.exchange(URL_GATEWAY+"/auth/header", HttpMethod.GET, entity, String.class);
-        logger.debug("checking final header :"+ finalHeader);
+        logger.debug("Add header autofill");
         ClientHttpRequestInterceptor interceptor = (httpRequest, bytes, execution) -> {
-            httpRequest.getHeaders().set("Authorization", finalHeader.getBody());
+            httpRequest.getHeaders().set("Authorization", "Basic " + Base64.getEncoder().encodeToString(("user:user").getBytes()));
             return execution.execute(httpRequest, bytes);
         };
         restTemplate.getInterceptors().add(interceptor);
